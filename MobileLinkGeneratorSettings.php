@@ -6,13 +6,33 @@
  */
 class MobileLinkGeneratorSettings {
 
+    private $ICON = [
+        'favicon' => 'images/favicon.ico',
+        "icon" => 'images/apple-touch-icon-192x192.png',
+        "apple-touch-icon" => 'images/apple-touch-icon.png',
+        "57x57" => 'images/apple-touch-icon-57x57.png',
+        "72x72" => 'images/apple-touch-icon-72x72.png',
+        "76x76" => 'images/apple-touch-icon-76x76.png',
+        "114x114" => 'images/apple-touch-icon-114x114.png',
+        "120x120" => 'images/apple-touch-icon-120x120.png',
+        "144x144" => 'images/apple-touch-icon-144x144.png',
+        "152x152" => 'images/apple-touch-icon-152x152.png',
+        "180x180" => 'images/apple-touch-icon-180x180.png'
+    ];
+    // Options 
     private $mobile_link_generator_options;
 
+    /**
+     * Constructor
+     */
     public function __construct() {
         add_action('admin_menu', array($this, 'mobile_link_generator_add_plugin_page'));
         add_action('admin_init', array($this, 'mobile_link_generator_page_init'));
     }
 
+    /**
+     * Add the plugin page
+     */
     public function mobile_link_generator_add_plugin_page() {
         add_menu_page(
                 'Mobile Link Generator', // page_title
@@ -25,6 +45,9 @@ class MobileLinkGeneratorSettings {
         );
     }
 
+    /**
+     * Create the admin page ...
+     */
     public function mobile_link_generator_create_admin_page() {
         $this->mobile_link_generator_options = get_option('mobile_link_generator_option_name');
         ?>
@@ -45,6 +68,11 @@ class MobileLinkGeneratorSettings {
         <?php
     }
 
+    /**
+     * Initialize the page
+     * 
+     * @global type $pagenow
+     */
     public function mobile_link_generator_page_init() {
         global $pagenow;
 
@@ -62,9 +90,9 @@ class MobileLinkGeneratorSettings {
         );
 
         add_settings_field(
-                'favicon_ico_0', // id
+                'favicon', // id
                 'favicon.ico', // title
-                array($this, 'favicon_ico_0_callback'), // callback
+                array($this, 'favicon_callback'), // callback
                 'mobile-link-generator-admin', // page
                 'mobile_link_generator_setting_section' // section
         );
@@ -142,10 +170,16 @@ class MobileLinkGeneratorSettings {
         );
     }
 
+    /**
+     * Sanitize the options 
+     * 
+     * @param type $input
+     * @return type
+     */
     public function mobile_link_generator_sanitize($input) {
         $sanitary_values = array();
-        if (isset($input['favicon_ico_0'])) {
-            $sanitary_values['favicon_ico_0'] = sanitize_text_field($input['favicon_ico_0']);
+        if (isset($input['favicon'])) {
+            $sanitary_values['favicon'] = sanitize_text_field($input['favicon']);
         }
 
         if (isset($input['apple_touch_192x192_1'])) {
@@ -191,7 +225,9 @@ class MobileLinkGeneratorSettings {
         
     }
 
-    public function favicon_ico_0_callback() {
+    public function mobile_link_generator_enqueue() {
+        wp_enqueue_media();
+
         wp_enqueue_script('jquery');
 
         wp_enqueue_script('thickbox');
@@ -200,36 +236,63 @@ class MobileLinkGeneratorSettings {
         wp_enqueue_script('media-upload');
 
         wp_enqueue_script('media_button_script', plugin_dir_url(__FILE__) . 'js/media_button.js', array(), false, true);
-        $value = isset($this->mobile_link_generator_options['favicon_ico_0']) ? esc_attr($this->mobile_link_generator_options['favicon_ico_0']) : '';
+    }
+
+    /**
+     * Set the call back for favicon
+     */
+    public function favicon_callback() {
+        $this->mobile_link_generator_enqueue();
+        $value = isset($this->mobile_link_generator_options['favicon']) ? esc_attr($this->mobile_link_generator_options['favicon']) : '';
         echo <<<EOF
 	<div class='image-preview-wrapper'>
-                <img id='favicon_ico_0_preview' src='{$value}' width='100' height='100' style='max-height: 100px; width: 100px;'>
+                <img id='favicon_preview' src='{$value}' width='100' height='100' style='max-height: 100px; width: 100px;'>
 	</div>
         <div class='uploader'>
-	<input id="favicon_ico_0_button" type="button" class="button" value="Upload image" />
-	<input type='hidden' name='mobile_link_generator_option_name[favicon_ico_0]' id='favicon_ico_0' value='{$value}'>
+	<input id="favicon_button" type="button" class="button" value="Upload image" />
+	<input type='hidden' name='mobile_link_generator_option_name[favicon]' id='favicon' value='{$value}'>
         </div>
 EOF;
     }
 
+    /**
+     * 192x192 icon
+     */
     public function apple_touch_192x192_1_callback() {
-        printf(
-                '<input class="regular-text" type="text" name="mobile_link_generator_option_name[apple_touch_192x192_1]" id="apple_touch_192x192_1" value="%s">', isset($this->mobile_link_generator_options['apple_touch_192x192_1']) ? esc_attr($this->mobile_link_generator_options['apple_touch_192x192_1']) : ''
-        );
+        $this->mobile_link_generator_enqueue();
+        $value = isset($this->mobile_link_generator_options['apple_touch_192x192_1']) ? esc_attr($this->mobile_link_generator_options['apple_touch_192x192_1']) : '';
+        echo <<<EOF
+	<div class='image-preview-wrapper'>
+                <img id='apple_touch_192x192_1_preview' src='{$value}' width='100' height='100' style='max-height: 100px; width: 100px;'>
+	</div>
+        <div class='uploader'>
+	<input id="apple_touch_192x192_1_button" type="button" class="button" value="Upload image" />
+	<input type='hidden' name='mobile_link_generator_option_name[apple_touch_192x192_1]' id='apple_touch_192x192_1' value='{$value}'>
+        </div>
+EOF;
     }
 
+    /**
+     * 57x57 icon
+     */
     public function apple_touch_57x57_2_callback() {
         printf(
                 '<input class="regular-text" type="text" name="mobile_link_generator_option_name[apple_touch_57x57_2]" id="apple_touch_57x57_2" value="%s">', isset($this->mobile_link_generator_options['apple_touch_57x57_2']) ? esc_attr($this->mobile_link_generator_options['apple_touch_57x57_2']) : ''
         );
     }
 
+    /**
+     * 72x72 icon
+     */
     public function apple_touch_72x72_3_callback() {
         printf(
                 '<input class="regular-text" type="text" name="mobile_link_generator_option_name[apple_touch_72x72_3]" id="apple_touch_72x72_3" value="%s">', isset($this->mobile_link_generator_options['apple_touch_72x72_3']) ? esc_attr($this->mobile_link_generator_options['apple_touch_72x72_3']) : ''
         );
     }
 
+    /**
+     * 76x76 icon
+     */
     public function apple_touch_76x76_4_callback() {
         printf(
                 '<input class="regular-text" type="text" name="mobile_link_generator_option_name[apple_touch_76x76_4]" id="apple_touch_76x76_4" value="%s">', isset($this->mobile_link_generator_options['apple_touch_76x76_4']) ? esc_attr($this->mobile_link_generator_options['apple_touch_76x76_4']) : ''
@@ -242,43 +305,115 @@ EOF;
         );
     }
 
+    /**
+     * 120x120 icon
+     */
     public function apple_touch_120x120_6_callback() {
         printf(
                 '<input class="regular-text" type="text" name="mobile_link_generator_option_name[apple_touch_120x120_6]" id="apple_touch_120x120_6" value="%s">', isset($this->mobile_link_generator_options['apple_touch_120x120_6']) ? esc_attr($this->mobile_link_generator_options['apple_touch_120x120_6']) : ''
         );
     }
 
+    /**
+     * 144x144 icon
+     */
     public function apple_touch_144x144_7_callback() {
         printf(
                 '<input class="regular-text" type="text" name="mobile_link_generator_option_name[apple_touch_144x144_7]" id="apple_touch_144x144_7" value="%s">', isset($this->mobile_link_generator_options['apple_touch_144x144_7']) ? esc_attr($this->mobile_link_generator_options['apple_touch_144x144_7']) : ''
         );
     }
 
+    /**
+     * 152x152 icon
+     */
     public function apple_touch_152x152_8_callback() {
         printf(
                 '<input class="regular-text" type="text" name="mobile_link_generator_option_name[apple_touch_152x152_8]" id="apple_touch_152x152_8" value="%s">', isset($this->mobile_link_generator_options['apple_touch_152x152_8']) ? esc_attr($this->mobile_link_generator_options['apple_touch_152x152_8']) : ''
         );
     }
 
+    /**
+     * 180x180 icon
+     */
     public function apple_touch_180x180_9_callback() {
         printf(
                 '<input class="regular-text" type="text" name="mobile_link_generator_option_name[apple_touch_180x180_9]" id="apple_touch_180x180_9" value="%s">', isset($this->mobile_link_generator_options['apple_touch_180x180_9']) ? esc_attr($this->mobile_link_generator_options['apple_touch_180x180_9']) : ''
         );
     }
 
-}
+    /**
+     * Get the right URL for the image, based on our current location
+     * @param type $fname
+     */
+    function getImageURL($fname) {
+        return plugins_url($fname, __FILE__);
+    }
 
-/* 
- * Retrieve this value with:
- * $mobile_link_generator_options = get_option( 'mobile_link_generator_option_name' ); // Array of All Options
- * $favicon_ico_0 = $mobile_link_generator_options['favicon_ico_0']; // favicon.ico
- * $apple_touch_192x192_1 = $mobile_link_generator_options['apple_touch_192x192_1']; // apple touch (192x192)
- * $apple_touch_57x57_2 = $mobile_link_generator_options['apple_touch_57x57_2']; // apple touch (57x57)
- * $apple_touch_72x72_3 = $mobile_link_generator_options['apple_touch_72x72_3']; // apple touch (72x72)
- * $apple_touch_76x76_4 = $mobile_link_generator_options['apple_touch_76x76_4']; // apple touch (76x76)
- * $apple_touch_114x114_5 = $mobile_link_generator_options['apple_touch_114x114_5']; // apple touch (114x114)
- * $apple_touch_120x120_6 = $mobile_link_generator_options['apple_touch_120x120_6']; // apple touch (120x120)
- * $apple_touch_144x144_7 = $mobile_link_generator_options['apple_touch_144x144_7']; // apple touch (144x144)
- * $apple_touch_152x152_8 = $mobile_link_generator_options['apple_touch_152x152_8']; // apple touch (152x152)
- * $apple_touch_180x180_9 = $mobile_link_generator_options['apple_touch_180x180_9']; // apple touch (180x180)
- */
+    /**
+     * Get the image by name from the array 
+     * 
+     * @param type $selector
+     * @return type
+     */
+    public function getImage($selector) {
+        $returnValue = $this->ICON[$selector];
+        return $returnValue;
+    }
+
+    /**
+     * Icon html snippet 
+     * 
+     * @return type
+     */
+    public function getIconHTML() {
+        $url = $this->getImageURL($this->ICON['icon']);
+        $returnValue = <<<EOF
+                <link rel="icon" sizes="192x192" href="{$url}" type="image/png" />
+EOF;
+        return $returnValue;
+    }
+
+    /**
+     * Apple touch icon snippet
+     * 
+     * @return type
+     */
+    public function getAppleTouchIconHTML() {
+        $url = $this->getImageURL($this->ICON['apple_touch_icon']);
+        $returnValue = <<<EOF
+               <link rel = "apple-touch-icon" href = "{$url}" type = "image/png" />
+
+EOF;
+        return $returnValue;
+    }
+
+    /**
+     * Get the Apple touch icon
+     * 
+     * @param type $size
+     * @return type
+     */
+    public function getAppleTouchIconBySizeHTML($size) {
+        $url = $this->getImageURL($this->ICON[$size]);
+        $returnValue = <<<EOF
+                <link rel = "apple-touch-icon" sizes = "{$size}" href = "{$url}" type = "image/png" />
+
+EOF;
+        return $returnValue;
+    }
+
+}
+    /*
+     * Retrieve this value with:
+     * $mobile_link_generator_options = get_option( 'mobile_link_generator_option_name' ); // Array of All Options
+     * $favicon = $mobile_link_generator_options['favicon']; // favicon.ico
+     * $apple_touch_192x192_1 = $mobile_link_generator_options['apple_touch_192x192_1']; // apple touch (192x192)
+     * $apple_touch_57x57_2 = $mobile_link_generator_options['apple_touch_57x57_2']; // apple touch (57x57)
+     * $apple_touch_72x72_3 = $mobile_link_generator_options['apple_touch_72x72_3']; // apple touch (72x72)
+     * $apple_touch_76x76_4 = $mobile_link_generator_options['apple_touch_76x76_4']; // apple touch (76x76)
+     * $apple_touch_114x114_5 = $mobile_link_generator_options['apple_touch_114x114_5']; // apple touch (114x114)
+     * $apple_touch_120x120_6 = $mobile_link_generator_options['apple_touch_120x120_6']; // apple touch (120x120)
+     * $apple_touch_144x144_7 = $mobile_link_generator_options['apple_touch_144x144_7']; // apple touch (144x144)
+     * $apple_touch_152x152_8 = $mobile_link_generator_options['apple_touch_152x152_8']; // apple touch (152x152)
+     * $apple_touch_180x180_9 = $mobile_link_generator_options['apple_touch_180x180_9']; // apple touch (180x180)
+     */
