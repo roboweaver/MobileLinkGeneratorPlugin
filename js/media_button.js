@@ -3,11 +3,41 @@
 (function ($) {
     $(document).ready(function () {
         console.log(wp);
-        $('#favicon_button').on('click', function () {
-                // Accepts an optional object hash to override default values.
-                var frame = new wp.media.view.MediaFrame.Select({
+        favicon_button = $('#favicon_button')
+        favicon_button.on('click',
+                {
+                    name: "favicon.ico",
+                    title: "Select favicon.ico",
+                    buttonTitle: "Use this favicon.ico",
+                    type: "image/ico", 
+                    image_url: '#favicon',
+                    image_preview: '#favicon_preview'
+                 },
+                mediaHandler
+        );
+
+        apple_192x192_button = $('#apple_touch_192x192_1_button');
+        apple_192x192_button.on('click',
+                {
+                    name: "apple_touch_192x192.png",
+                    title: "Apple touch 192x192",
+                    buttonTitle: "Use this image",
+                    type: "image/png",
+                    image_url: '#apple_touch_192x192_1_button',
+                    image_preview: '#apple_touch_192x192_1_preview'
+                },
+                mediaHandler
+                        
+        );
+    });
+
+    function mediaHandler(event) {
+        console.log("mediaHandler");
+        {
+            // Accepts an optional object hash to override default values.
+            var frame = new wp.media.view.MediaFrame.Select({
                 // Modal title
-                title: 'Select favicon',
+                title: event.data.title,
                 // Enable/disable multiple select
                 multiple: true,
                 // Library WordPress query arguments.
@@ -16,7 +46,7 @@
                     // [ 'name', 'author', 'date', 'title', 'modified', 'uploadedTo',
                     // 'id', 'post__in', 'menuOrder' ]
                     orderby: 'title',
-                    'image': 'image/ico', // mime type. e.g. 'image', 'image/jpeg'
+                    'image': event.data.type, // mime type. e.g. 'image', 'image/jpeg'
                     type: 'image',
                     // Searches the attachment title.
                     search: null,
@@ -24,7 +54,7 @@
                     uploadedTo: null
                 },
                 button: {
-                    text: 'Select favicon'
+                    text: event.data.buttonTitle
                 }
             });
             console.log(frame);
@@ -46,13 +76,19 @@
             // Fires when a user has selected attachment(s) and clicked the select button.
             // @see media.view.MediaFrame.Post.mainInsertToolbar()
             frame.on('select', function () {
-                var image_url = frame.state().get('selection');
-                console.log(image_url);
-                jQuery('#favicon').val(image_url);
-                jQuery('#favicon_preview').attr('src', image_url);
+//                console.log(frame.state().get('selection').first().toJSON());
+                var image_url = frame.state().get('selection').first().toJSON().url;
+//                console.log("image_url", image_url);
+//                console.log(event.data.image_url);
+//                console.log(jQuery(event.data.image_url));
+                jQuery(event.data.image_url).val(image_url);
+//                console.log(jQuery(event.data.image_url).val());
+                jQuery(event.data.image_preview).attr('src', image_url);
             });
             // Fires when a state activates.
-            frame.on('activate', function () {});
+            frame.on('activate', function () {
+                console.log('activate', this);
+            });
             // Fires when a mode is deactivated on a region.
             frame.on('{region}:deactivate', function () {});
             // and a more specific event including the mode.
@@ -75,6 +111,7 @@
             frame.lastState();
             // Open the modal.
             frame.open();
-        });
-    });
+        }
+    }
+
 })(jQuery);
