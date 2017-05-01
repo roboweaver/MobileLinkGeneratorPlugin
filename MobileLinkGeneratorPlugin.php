@@ -27,9 +27,13 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+require_once('MobileLinkGeneratorSettings.php');
+
+
 function getImageURL($fname){
 	 echo plugins_url( $fname ,__FILE__ ); 
 }
+
 function addTheIcons() {
 	$dir =  plugin_dir_path( __FILE__ );
 	?>
@@ -46,5 +50,5 @@ function addTheIcons() {
 	<link rel="apple-touch-icon" sizes="180x180" href="<?php getImageURL('images/apple-touch-icon-180x180.png' ); ?>" type="image/png" />
 	<?php
 }
-
+new MobileLinkGeneratorSettings();
 add_action('wp_head', 'addTheIcons');
